@@ -1,5 +1,6 @@
 package com.testgame.game.main;
 
+import com.testgame.framework.util.InputHandler;
 import com.testgame.game.state.LoadState;
 import com.testgame.game.state.State;
 
@@ -19,6 +20,8 @@ public class Game extends JPanel implements Runnable {
     private volatile boolean running;
     private volatile State currentState;
 
+    private InputHandler inputHandler;
+
     public Game(int gameHeight, int gameWidth){
         System.out.println("Creating Game!");
 
@@ -33,16 +36,24 @@ public class Game extends JPanel implements Runnable {
 
     }
 
+    private void initInput(){
+        inputHandler = new InputHandler();
+        addKeyListener(inputHandler);
+        addMouseListener(inputHandler);
+    }
+
     public void setCurrentState(State newState) {
         System.out.println("Changing State!");
         System.gc();
-        newState.init();
         currentState = newState;
+        newState.init();
+        inputHandler.setCurrentState(currentState);
         System.out.println("State changed sucessfully!");
     }
     @Override
     public void addNotify(){
         super.addNotify();
+        initInput();
         setCurrentState(new LoadState());
         initGame();
 
